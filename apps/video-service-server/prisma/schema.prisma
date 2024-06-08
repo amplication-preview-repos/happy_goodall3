@@ -1,0 +1,62 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Video {
+  comments    Comment[]
+  createdAt   DateTime  @default(now())
+  description String?
+  fileUrl     Json?
+  id          String    @id @default(cuid())
+  owner       String?
+  title       String?
+  updatedAt   DateTime  @updatedAt
+  uploadDate  DateTime?
+}
+
+model UserProfile {
+  bio         String?
+  createdAt   DateTime @default(now())
+  displayName String?
+  id          String   @id @default(cuid())
+  updatedAt   DateTime @updatedAt
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model Category {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  content   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  video     Video?   @relation(fields: [videoId], references: [id])
+  videoId   String?
+}
+
+model User {
+  comments     Comment[]
+  createdAt    DateTime      @default(now())
+  email        String?       @unique
+  firstName    String?
+  id           String        @id @default(cuid())
+  lastName     String?
+  password     String
+  roles        Json
+  updatedAt    DateTime      @updatedAt
+  username     String        @unique
+  userProfiles UserProfile[]
+}
